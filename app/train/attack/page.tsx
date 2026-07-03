@@ -39,8 +39,6 @@ export default function AttackPage() {
     }
   }
 
-  const grade10 = report ? Math.round(report.score / 10) : 0;
-
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <header className="border-b border-zinc-800">
@@ -58,8 +56,7 @@ export default function AttackPage() {
         <div className="text-center space-y-3">
           <h1 className="text-3xl font-black">Attack Mode</h1>
           <p className="text-zinc-400 text-sm max-w-md mx-auto">
-            Submit your insult draft. MOBB (Mentor Of Bad Behavior) will grade
-            it, tell you why it&rsquo;s weak, and show you how it&rsquo;s done.
+            Send MOBB your insult. He will laugh at it.
           </p>
         </div>
 
@@ -77,7 +74,7 @@ export default function AttackPage() {
             disabled={loading || !text.trim()}
             className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-40 font-bold py-3 rounded-xl transition"
           >
-            {loading ? "MOBB is wincing…" : "Submit for judgment"}
+            {loading ? "MOBB is laughing…" : "Submit"}
           </button>
           {error && (
             <p className="text-center text-sm text-red-400">
@@ -112,7 +109,7 @@ export default function AttackPage() {
 
             <div>
               <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">
-                MOBB&rsquo;s notes ({grade10}/10 craftsmanship)
+                MOBB&rsquo;s reaction
               </div>
               <p className="text-sm text-zinc-300">{report.feedback}</p>
             </div>
