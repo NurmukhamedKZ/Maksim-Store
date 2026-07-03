@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/MoveMouse.build/primary.swiftdeps"
+  },
+  "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/Sources/MoveMouse/main.swift": {
+    "dependencies": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/MoveMouse.build/main.d",
+    "object": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/MoveMouse.build/main.swift.o",
+    "swiftmodule": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/MoveMouse.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/MoveMouse.build/main.swiftdeps",
+    "diagnostics": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/MoveMouse.build/main.dia"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/ParkSpot.build/primary.swiftdeps"
+  },
+  "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/Sources/ParkSpot/main.swift": {
+    "dependencies": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/ParkSpot.build/main.d",
+    "object": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/ParkSpot.build/main.swift.o",
+    "swiftmodule": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/ParkSpot.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/ParkSpot.build/main.swiftdeps",
+    "diagnostics": "/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/ParkSpot.build/main.dia"
+  }
+}

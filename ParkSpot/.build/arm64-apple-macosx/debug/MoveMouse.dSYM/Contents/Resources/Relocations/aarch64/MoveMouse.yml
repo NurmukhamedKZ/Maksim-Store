@@ -1,0 +1,20 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/nurma/vscode_projects/Maksim-Store/ParkSpot/.build/arm64-apple-macosx/debug/MoveMouse'
+relocations:
+  - { offset: 0x8F52D, size: 0x8, addend: 0x0, symName: _MoveMouse_main, symObjAddr: 0x0, symBinAddr: 0x100002D40, symSize: 0x3F4 }
+  - { offset: 0x8F551, size: 0x8, addend: 0x0, symName: '_$s9MoveMouse4argsSaySSGvp', symObjAddr: 0x2188, symBinAddr: 0x100008268, symSize: 0x0 }
+  - { offset: 0x8F56B, size: 0x8, addend: 0x0, symName: '_$s9MoveMouse5pointSo7CGPointVvp', symObjAddr: 0x2190, symBinAddr: 0x100008270, symSize: 0x0 }
+  - { offset: 0x8F579, size: 0x8, addend: 0x0, symName: _MoveMouse_main, symObjAddr: 0x0, symBinAddr: 0x100002D40, symSize: 0x3F4 }
+  - { offset: 0x8F5F3, size: 0x8, addend: 0x0, symName: '_$sS2SSysWl', symObjAddr: 0x48C, symBinAddr: 0x1000031CC, symSize: 0x64 }
+  - { offset: 0x8F607, size: 0x8, addend: 0x0, symName: '_$sSo7CGPointVMa', symObjAddr: 0x4F0, symBinAddr: 0x100003230, symSize: 0x94 }
+  - { offset: 0x8F61B, size: 0x8, addend: 0x0, symName: '_$ss26DefaultStringInterpolationVWOh', symObjAddr: 0x584, symBinAddr: 0x1000032C4, symSize: 0x28 }
+  - { offset: 0x8F62F, size: 0x8, addend: 0x0, symName: ___swift_memcpy16_8, symObjAddr: 0x5AC, symBinAddr: 0x1000032EC, symSize: 0xC }
+  - { offset: 0x8F643, size: 0x8, addend: 0x0, symName: ___swift_noop_void_return, symObjAddr: 0x5B8, symBinAddr: 0x1000032F8, symSize: 0x4 }
+  - { offset: 0x8F657, size: 0x8, addend: 0x0, symName: '_$sSo7CGPointVwet', symObjAddr: 0x5BC, symBinAddr: 0x1000032FC, symSize: 0x10C }
+  - { offset: 0x8F66B, size: 0x8, addend: 0x0, symName: '_$sSo7CGPointVwst', symObjAddr: 0x6C8, symBinAddr: 0x100003408, symSize: 0x1B0 }
+  - { offset: 0x8F67F, size: 0x8, addend: 0x0, symName: '_$sSa12_endMutationyyF', symObjAddr: 0x878, symBinAddr: 0x1000035B8, symSize: 0xC }
+  - { offset: 0x8F6CC, size: 0x8, addend: 0x0, symName: '_$ss27_finalizeUninitializedArrayySayxGABnlF', symObjAddr: 0x3F4, symBinAddr: 0x100003134, symSize: 0x40 }
+  - { offset: 0x8F6F6, size: 0x8, addend: 0x0, symName: '_$ss5print_9separator10terminatoryypd_S2StFfA0_', symObjAddr: 0x434, symBinAddr: 0x100003174, symSize: 0x2C }
+  - { offset: 0x8F712, size: 0x8, addend: 0x0, symName: '_$ss5print_9separator10terminatoryypd_S2StFfA1_', symObjAddr: 0x460, symBinAddr: 0x1000031A0, symSize: 0x2C }
+...
