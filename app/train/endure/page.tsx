@@ -28,15 +28,17 @@ export default function TribunalPage() {
   }, [messages, streaming]);
 
   useEffect(() => {
-    fetch("/api/difficulties")
+    setLevels([]);
+    setSelected(0);
+    fetch(`/api/difficulties?mode=${mode}`)
       .then((r) => r.json())
       .then(({ levels }) => setLevels(levels))
       .catch(() =>
         setLevels([
-          { label: "Трибунал", instruction: "INTENSITY: standard tribunal." },
+          { label: "Стандарт", instruction: "INTENSITY: standard contempt." },
         ]),
       );
-  }, []);
+  }, [mode]);
 
   async function streamBully(history: Msg[]) {
     setStreaming(true);
