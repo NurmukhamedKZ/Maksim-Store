@@ -119,12 +119,12 @@ export default function EndurePage() {
       {/* HUD */}
       <header className="border-b border-zinc-800 bg-zinc-950/90 backdrop-blur sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Link href="/" className="font-black tracking-tight text-violet-400">
-            ToxiGym™
+          <Link href="/" className="font-bold tracking-tight">
+            ToxiGym
           </Link>
           <div className="flex-1">
             <div className="flex justify-between gap-2 text-[10px] uppercase tracking-widest text-zinc-400 mb-1">
-              <span className="whitespace-nowrap">Composure™</span>
+              <span className="whitespace-nowrap">Composure</span>
               <span className="truncate text-right">
                 {composure}/100 · {verdict}
               </span>
@@ -149,11 +149,10 @@ export default function EndurePage() {
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 flex flex-col gap-4">
         {!started ? (
           <div className="m-auto text-center max-w-md space-y-6">
-            <div className="text-6xl">🥊</div>
             <h1 className="text-3xl font-black">Hostility Exposure Session</h1>
             <p className="text-zinc-400">
               Survive {SURVIVE_TARGET} exchanges with BARON to earn your
-              Certificate of Unbotherability™. Your final Composure Index goes
+              Certificate of Unbotherability. Your final Composure Index goes
               on the certificate. Your expulsion from nFactorial is, as always,
               already in motion.
             </p>
@@ -230,13 +229,12 @@ export default function EndurePage() {
       {/* Certificate */}
       {certified && (
         <div className="fixed inset-0 z-30 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gradient-to-br from-zinc-900 to-violet-950 border-4 border-double border-amber-400 rounded-xl max-w-md w-full p-8 text-center space-y-4 shadow-2xl">
-            <div className="text-5xl">🏅</div>
+          <div className="bg-zinc-900 border border-zinc-700 rounded-xl max-w-md w-full p-8 text-center space-y-4 shadow-2xl">
             <div className="text-[11px] uppercase tracking-[0.3em] text-amber-300">
-              ToxiGym™ hereby certifies
+              ToxiGym hereby certifies
             </div>
             <h2 className="text-3xl font-black">
-              Certified Unbotherable™
+              Certified Unbotherable
             </h2>
             <p className="text-zinc-300 text-sm">
               Survived {SURVIVE_TARGET} rounds of BARON. Final Composure Index:{" "}
@@ -251,7 +249,7 @@ export default function EndurePage() {
               onClick={() => setCertified(false)}
               className="bg-amber-400 text-zinc-950 font-bold px-6 py-2 rounded-lg"
             >
-              Screenshot it. Frame it. Return to abuse.
+              Return to abuse
             </button>
           </div>
         </div>

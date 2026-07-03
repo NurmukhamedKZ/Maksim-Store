@@ -1,4 +1,4 @@
-export const metadata = { title: "Careers · ToxiGym™" };
+export const metadata = { title: "Careers · ToxiGym" };
 
 const ROLES = [
   {
@@ -23,7 +23,7 @@ export default function CareersPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100 px-6 py-16">
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-black">Careers at ToxiGym™</h1>
+          <h1 className="text-3xl font-black">Careers at ToxiGym</h1>
           <p className="text-zinc-400 text-sm">
             We are a fully toxic-first company. Benefits include equity
             (decorative) and unlimited PTO (Permission To Obey).

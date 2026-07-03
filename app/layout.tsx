@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ToxiGym™ · The gym for your emotional damage",
+  title: "ToxiGym · The gym for your emotional damage",
   description:
-    "Get insulted by an AI until nothing can touch you. Certified Unbotherable™ or your tears back.",
+    "Get insulted by an AI until nothing can touch you. Certified Unbotherable or your tears back.",
 };
 
 export default function RootLayout({

@@ -1,12 +1,12 @@
 const SYSTEMS = [
   { name: "BARON · Hostility Unit", status: "Operational", note: "Insulting at 340ms p99" },
-  { name: "Composure Sensor™", status: "Operational", note: "Judging silently" },
+  { name: "Composure Sensor", status: "Operational", note: "Judging silently" },
   { name: "Expulsion Threat Generator", status: "Operational", note: "Memos drafted: 12,847" },
   { name: "Empathy Module", status: "Decommissioned", note: "Removed in v0.2 (by design)" },
   { name: "Certificate Printer", status: "Operational", note: "Ink: tears (recycled)" },
 ];
 
-export const metadata = { title: "Status · ToxiGym™" };
+export const metadata = { title: "Status · ToxiGym" };
 
 export default function StatusPage() {
   return (

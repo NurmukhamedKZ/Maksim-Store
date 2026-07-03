@@ -45,8 +45,8 @@ export default function AttackPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <header className="border-b border-zinc-800">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="font-black tracking-tight text-violet-400">
-            ToxiGym™
+          <Link href="/" className="font-bold tracking-tight">
+            ToxiGym
           </Link>
           <div className="text-[11px] uppercase tracking-widest text-zinc-400">
             Personal best: <span className="text-amber-400 font-bold">{best}/100</span>
@@ -56,7 +56,6 @@ export default function AttackPage() {
 
       <main className="max-w-2xl mx-auto px-4 py-10 space-y-8">
         <div className="text-center space-y-3">
-          <div className="text-5xl">🗡️</div>
           <h1 className="text-3xl font-black">Attack Mode</h1>
           <p className="text-zinc-400 text-sm max-w-md mx-auto">
             Submit your insult draft. MOBB (Mentor Of Bad Behavior) will grade
