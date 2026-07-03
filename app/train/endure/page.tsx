@@ -20,7 +20,6 @@ export default function EndurePage() {
   const [difficulty, setDifficulty] = useState("linkedin");
   const [composure, setComposure] = useState(100);
   const [verdict, setVerdict] = useState("AWAITING SUBJECT");
-  const [breach, setBreach] = useState(false);
   const [survived, setSurvived] = useState(0);
   const [certified, setCertified] = useState(false);
   const [started, setStarted] = useState(false);
@@ -77,10 +76,6 @@ export default function EndurePage() {
         const next = Math.round(c * 0.6 + score * 0.4);
         return Math.max(0, Math.min(100, next));
       });
-      if (score < 40) {
-        setBreach(true);
-        setTimeout(() => setBreach(false), 2500);
-      }
     } catch {
       // sensor glitch, keep last reading
     }
@@ -107,7 +102,7 @@ export default function EndurePage() {
     setSurvived(nextSurvived);
     scoreComposure(text, lastInsult);
     await streamBully(history);
-    if (nextSurvived >= SURVIVE_TARGET && composure >= 70) {
+    if (nextSurvived >= SURVIVE_TARGET) {
       setCertified(true);
     }
   }
@@ -150,14 +145,6 @@ export default function EndurePage() {
         </div>
       </header>
 
-      {breach && (
-        <div className="fixed inset-x-0 top-16 z-20 flex justify-center pointer-events-none">
-          <div className="bg-red-600 text-white font-black tracking-widest px-6 py-2 rounded-lg animate-pulse shadow-2xl">
-            ⚠ COMPOSURE BREACH DETECTED
-          </div>
-        </div>
-      )}
-
       {/* Chat */}
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 flex flex-col gap-4">
         {!started ? (
@@ -165,10 +152,10 @@ export default function EndurePage() {
             <div className="text-6xl">🥊</div>
             <h1 className="text-3xl font-black">Hostility Exposure Session</h1>
             <p className="text-zinc-400">
-              BARON will attempt to destabilize you. Stay polite for{" "}
-              {SURVIVE_TARGET} exchanges with Composure ≥ 70 to earn your
-              Certificate of Unbotherability™. Your expulsion from nFactorial
-              is, as always, on the table.
+              Survive {SURVIVE_TARGET} exchanges with BARON to earn your
+              Certificate of Unbotherability™. Your final Composure Index goes
+              on the certificate. Your expulsion from nFactorial is, as always,
+              already in motion.
             </p>
             <div className="flex flex-col gap-2">
               {DIFFICULTIES.map((d) => (
@@ -252,8 +239,10 @@ export default function EndurePage() {
               Certified Unbotherable™
             </h2>
             <p className="text-zinc-300 text-sm">
-              Survived {SURVIVE_TARGET} rounds of BARON with a final Composure
-              Index of {composure}. Expulsion from nFactorial: postponed.
+              Survived {SURVIVE_TARGET} rounds of BARON. Final Composure Index:{" "}
+              {composure}
+              {composure < 40 ? " (we watched you crack)" : ""}. Expulsion from
+              nFactorial: postponed.
             </p>
             <p className="text-[11px] text-zinc-500">
               This certificate has no legal, professional, or emotional value.
