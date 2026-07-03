@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ToxiGym · Prove you belong",
+  title: "ToxiGym · HR department of nFactorial",
   description:
-    "BARON, the gatekeeper AI, decides whether you deserve your seat at nFactorial. Pitch. Defend. Survive.",
+    "BARON runs resident relations. Office hours for mockery, the Tribunal for your seat. Human resources, minus the human.",
 };
 
 export default function RootLayout({

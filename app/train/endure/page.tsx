@@ -13,6 +13,7 @@ export default function TribunalPage() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [mode, setMode] = useState<"roast" | "tribunal">("roast");
   const [levels, setLevels] = useState<Level[]>([]);
   const [selected, setSelected] = useState(0);
   const [worthiness, setWorthiness] = useState(0);
@@ -47,6 +48,7 @@ export default function TribunalPage() {
         body: JSON.stringify({
           messages: history,
           intensity: levels[selected]?.instruction,
+          mode,
         }),
       });
       if (!res.ok || !res.body) throw new Error(await res.text());
@@ -113,6 +115,10 @@ export default function TribunalPage() {
       [...messages].reverse().find((m) => m.role === "assistant")?.content ??
       "";
     const history: Msg[] = [...messages, { role: "user", content: text }];
+    if (mode === "roast") {
+      await streamBully(history);
+      return;
+    }
     const nextRound = round + 1;
     setRound(nextRound);
     const scorePromise = scoreWorthiness(text, lastAttack);
@@ -138,26 +144,34 @@ export default function TribunalPage() {
           <Link href="/" className="font-bold tracking-tight">
             ToxiGym
           </Link>
-          <div className="flex-1">
-            <div className="flex justify-between gap-2 text-[10px] uppercase tracking-widest text-zinc-600 mb-1">
-              <span className="whitespace-nowrap">Worthiness</span>
-              <span className="truncate text-right">
-                {worthiness}/100 · {verdict}
-              </span>
+          {mode === "tribunal" ? (
+            <>
+              <div className="flex-1">
+                <div className="flex justify-between gap-2 text-[10px] uppercase tracking-widest text-zinc-600 mb-1">
+                  <span className="whitespace-nowrap">Worthiness</span>
+                  <span className="truncate text-right">
+                    {worthiness}/100 · {verdict}
+                  </span>
+                </div>
+                <div className="h-2.5 rounded-full bg-zinc-200 overflow-hidden">
+                  <div
+                    className={`h-full ${barColor} transition-all duration-700`}
+                    style={{ width: `${worthiness}%` }}
+                  />
+                </div>
+              </div>
+              <div className="text-[11px] uppercase tracking-widest text-zinc-600 text-right">
+                Round
+                <div className="text-lg font-bold text-zinc-900 leading-none">
+                  {Math.min(round, ROUNDS)}/{ROUNDS}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 text-right text-[11px] uppercase tracking-widest text-zinc-500">
+              BARON · always online
             </div>
-            <div className="h-2.5 rounded-full bg-zinc-200 overflow-hidden">
-              <div
-                className={`h-full ${barColor} transition-all duration-700`}
-                style={{ width: `${worthiness}%` }}
-              />
-            </div>
-          </div>
-          <div className="text-[11px] uppercase tracking-widest text-zinc-600 text-right">
-            Round
-            <div className="text-lg font-bold text-zinc-900 leading-none">
-              {Math.min(round, ROUNDS)}/{ROUNDS}
-            </div>
-          </div>
+          )}
         </div>
       </header>
 
@@ -165,12 +179,44 @@ export default function TribunalPage() {
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 flex flex-col gap-4">
         {!started ? (
           <div className="m-auto text-center max-w-md space-y-6">
-            <h1 className="text-3xl font-black">The Tribunal</h1>
-            <p className="text-zinc-600">
-              BARON decides who keeps their seat at nFactorial. Pitch your
-              product. Defend it for {ROUNDS} rounds. Reach Worthiness{" "}
-              {WORTHY_THRESHOLD} or the intern gets your desk.
-            </p>
+            <h1 className="text-3xl font-black">
+              {mode === "roast" ? "BARON" : "The Tribunal"}
+            </h1>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setMode("roast")}
+                className={`px-4 py-3 rounded-lg border text-sm font-semibold transition ${
+                  mode === "roast"
+                    ? "border-red-500 bg-red-500/10 text-red-700"
+                    : "border-zinc-300 text-zinc-600 hover:border-zinc-400"
+                }`}
+              >
+                Приёмные часы
+              </button>
+              <button
+                onClick={() => setMode("tribunal")}
+                className={`px-4 py-3 rounded-lg border text-sm font-semibold transition ${
+                  mode === "tribunal"
+                    ? "border-red-500 bg-red-500/10 text-red-700"
+                    : "border-zinc-300 text-zinc-600 hover:border-zinc-400"
+                }`}
+              >
+                Трибунал
+              </button>
+            </div>
+            {mode === "roast" ? (
+              <p className="text-zinc-600">
+                Дверь в HR всегда открыта. Без миссии, без счёта: BARON
+                выслушает любой твой вопрос и поиздевается над каждым. Просто
+                ты и он.
+              </p>
+            ) : (
+              <p className="text-zinc-600">
+                BARON decides who keeps their seat at nFactorial. Pitch your
+                product. Defend it for {ROUNDS} rounds. Reach Worthiness{" "}
+                {WORTHY_THRESHOLD} or the intern gets your desk.
+              </p>
+            )}
             <p className="text-xs text-zinc-500">
               12,847 expelled. 3 deemed worthy. He regrets all three.
             </p>
@@ -199,7 +245,7 @@ export default function TribunalPage() {
               onClick={begin}
               className="w-full bg-red-600 text-white hover:bg-red-500 font-bold py-3 rounded-lg transition"
             >
-              Enter the Tribunal
+              {mode === "roast" ? "Начать" : "Enter the Tribunal"}
             </button>
           </div>
         ) : (
@@ -235,7 +281,9 @@ export default function TribunalPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder="Defend your seat."
+              placeholder={
+                mode === "tribunal" ? "Defend your seat." : "Скажи ему что-нибудь."
+              }
               className="flex-1 bg-zinc-50 border border-zinc-300 rounded-lg px-4 py-2.5 outline-none focus:border-red-500"
               disabled={streaming}
             />

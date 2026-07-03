@@ -9,10 +9,14 @@ const METRICS = [
 const FAQ = [
   {
     q: "What is this?",
-    a: "BARON, the gatekeeper AI, decides whether you deserve your seat at nFactorial. Pitch. Defend. Survive.",
+    a: "The HR department of nFactorial. BARON handles resident relations, complaints, and expulsions. Mostly expulsions.",
   },
   {
-    q: "What if I fail?",
+    q: "Can I just talk to him?",
+    a: "Office hours are always open. He will make you regret coming.",
+  },
+  {
+    q: "What if I fail the Tribunal?",
     a: "You will.",
   },
   {
@@ -36,25 +40,46 @@ export default function Landing() {
         </div>
       </nav>
 
-      <header className="max-w-3xl mx-auto px-6 pt-24 pb-24 text-center">
+      <header className="max-w-3xl mx-auto px-6 pt-24 pb-16 text-center">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-6">
+          nFactorial · Department of Human Resources
+        </div>
         <h1 className="text-5xl md:text-6xl font-black leading-tight tracking-tight">
-          Prove you
+          Human resources.
           <br />
-          <span className="text-red-600">belong here.</span>
+          <span className="text-red-600">Minus the human.</span>
         </h1>
         <p className="mt-6 text-zinc-600 max-w-md mx-auto">
-          BARON guards the incubator. Pitch your product, survive his
-          judgment, keep your badge. Almost nobody does.
+          BARON runs resident relations at nFactorial. Come to office hours if
+          you dare, or enter the Tribunal and pitch for your seat. Almost
+          nobody keeps it.
         </p>
         <div className="mt-10 flex justify-center">
           <Link
             href="/train/endure"
             className="bg-red-600 text-white hover:bg-red-500 font-semibold px-10 py-3 rounded-lg transition"
           >
-            Enter the Tribunal
+            Visit HR
           </Link>
         </div>
       </header>
+
+      <section className="max-w-3xl mx-auto px-6 pb-20 grid md:grid-cols-2 gap-4">
+        <div className="border border-zinc-200 rounded-xl p-6 text-left">
+          <h3 className="font-bold">Office hours</h3>
+          <p className="mt-2 text-sm text-zinc-600">
+            An open door to HR. No agenda, no score. BARON listens to your
+            concerns and mocks every one of them.
+          </p>
+        </div>
+        <div className="border border-red-500 rounded-xl p-6 text-left">
+          <h3 className="font-bold text-red-600">The Tribunal</h3>
+          <p className="mt-2 text-sm text-zinc-600">
+            The performance review. Pitch your product, defend it for 10
+            rounds, reach Worthiness 80 or the intern gets your desk.
+          </p>
+        </div>
+      </section>
 
       <section className="border-y border-zinc-200">
         <div className="max-w-3xl mx-auto px-6 py-10 grid grid-cols-3 gap-6 text-center">
