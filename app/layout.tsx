@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ToxiGym · The gym for your emotional damage",
+  title: "ToxiGym · Prove you belong",
   description:
-    "Get insulted by an AI until nothing can touch you. Certified Unbotherable or your tears back.",
+    "BARON, the gatekeeper AI, decides whether you deserve your seat at nFactorial. Pitch. Defend. Survive.",
 };
 
 export default function RootLayout({

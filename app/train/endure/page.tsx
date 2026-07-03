@@ -11,17 +11,18 @@ const DIFFICULTIES = [
   { id: "csgo", label: "Ranked Lobby (censored)" },
 ];
 
-const SURVIVE_TARGET = 10;
+const ROUNDS = 10;
+const WORTHY_THRESHOLD = 80;
 
-export default function EndurePage() {
+export default function TribunalPage() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [difficulty, setDifficulty] = useState("linkedin");
-  const [composure, setComposure] = useState(100);
-  const [verdict, setVerdict] = useState("AWAITING SUBJECT");
-  const [survived, setSurvived] = useState(0);
-  const [certified, setCertified] = useState(false);
+  const [worthiness, setWorthiness] = useState(0);
+  const [verdict, setVerdict] = useState("UNPROVEN");
+  const [round, setRound] = useState(0);
+  const [outcome, setOutcome] = useState<"worthy" | "expelled" | null>(null);
   const [started, setStarted] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +56,7 @@ export default function EndurePage() {
         {
           role: "assistant",
           content:
-            "BARON is currently reviewing your incubator file in silence. (API error: check DEEPSEEK_API_KEY.)",
+            "BARON is reviewing your file in silence. (API error: check DEEPSEEK_API_KEY.)",
         },
       ]);
     } finally {
@@ -63,30 +64,34 @@ export default function EndurePage() {
     }
   }
 
-  async function scoreComposure(userMessage: string, lastInsult: string) {
-    try {
-      const res = await fetch("/api/composure", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userMessage, lastInsult }),
-      });
-      const { score, verdict } = await res.json();
-      setVerdict(verdict);
-      setComposure((c) => {
-        const next = Math.round(c * 0.6 + score * 0.4);
-        return Math.max(0, Math.min(100, next));
-      });
-    } catch {
-      // sensor glitch, keep last reading
-    }
+  function scoreWorthiness(
+    userMessage: string,
+    lastAttack: string,
+  ): Promise<number> {
+    return fetch("/api/worthiness", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userMessage, lastAttack }),
+    })
+      .then((r) => r.json())
+      .then(({ score, verdict }) => {
+        setVerdict(verdict);
+        let next = 0;
+        setWorthiness((w) => {
+          next = Math.max(0, Math.min(100, Math.round(w * 0.7 + score * 0.3)));
+          return next;
+        });
+        return next;
+      })
+      .catch(() => worthiness);
   }
 
   function begin() {
     setStarted(true);
-    setComposure(100);
-    setSurvived(0);
-    setCertified(false);
-    setVerdict("BASELINE ESTABLISHED");
+    setWorthiness(0);
+    setRound(0);
+    setOutcome(null);
+    setVerdict("UNPROVEN");
     streamBully([]);
   }
 
@@ -94,52 +99,53 @@ export default function EndurePage() {
     const text = input.trim();
     if (!text || streaming) return;
     setInput("");
-    const lastInsult =
+    const lastAttack =
       [...messages].reverse().find((m) => m.role === "assistant")?.content ??
       "";
     const history: Msg[] = [...messages, { role: "user", content: text }];
-    const nextSurvived = survived + 1;
-    setSurvived(nextSurvived);
-    scoreComposure(text, lastInsult);
+    const nextRound = round + 1;
+    setRound(nextRound);
+    const scorePromise = scoreWorthiness(text, lastAttack);
     await streamBully(history);
-    if (nextSurvived >= SURVIVE_TARGET) {
-      setCertified(true);
+    if (nextRound >= ROUNDS) {
+      const finalWorthiness = await scorePromise;
+      setOutcome(finalWorthiness >= WORTHY_THRESHOLD ? "worthy" : "expelled");
     }
   }
 
   const barColor =
-    composure >= 70
+    worthiness >= WORTHY_THRESHOLD
       ? "bg-emerald-400"
-      : composure >= 40
+      : worthiness >= 40
         ? "bg-amber-400"
         : "bg-red-500";
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col">
+    <div className="min-h-screen bg-white text-zinc-900 flex flex-col">
       {/* HUD */}
-      <header className="border-b border-zinc-800 bg-zinc-950/90 backdrop-blur sticky top-0 z-10">
+      <header className="border-b border-zinc-200 bg-white/90 backdrop-blur sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-4">
           <Link href="/" className="font-bold tracking-tight">
             ToxiGym
           </Link>
           <div className="flex-1">
-            <div className="flex justify-between gap-2 text-[10px] uppercase tracking-widest text-zinc-400 mb-1">
-              <span className="whitespace-nowrap">Composure</span>
+            <div className="flex justify-between gap-2 text-[10px] uppercase tracking-widest text-zinc-600 mb-1">
+              <span className="whitespace-nowrap">Worthiness</span>
               <span className="truncate text-right">
-                {composure}/100 · {verdict}
+                {worthiness}/100 · {verdict}
               </span>
             </div>
-            <div className="h-2.5 rounded-full bg-zinc-800 overflow-hidden">
+            <div className="h-2.5 rounded-full bg-zinc-200 overflow-hidden">
               <div
                 className={`h-full ${barColor} transition-all duration-700`}
-                style={{ width: `${composure}%` }}
+                style={{ width: `${worthiness}%` }}
               />
             </div>
           </div>
-          <div className="text-[11px] uppercase tracking-widest text-zinc-400 text-right">
-            Endured
-            <div className="text-lg font-bold text-zinc-100 leading-none">
-              {Math.min(survived, SURVIVE_TARGET)}/{SURVIVE_TARGET}
+          <div className="text-[11px] uppercase tracking-widest text-zinc-600 text-right">
+            Round
+            <div className="text-lg font-bold text-zinc-900 leading-none">
+              {Math.min(round, ROUNDS)}/{ROUNDS}
             </div>
           </div>
         </div>
@@ -149,12 +155,14 @@ export default function EndurePage() {
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 flex flex-col gap-4">
         {!started ? (
           <div className="m-auto text-center max-w-md space-y-6">
-            <h1 className="text-3xl font-black">Hostility Exposure Session</h1>
-            <p className="text-zinc-400">
-              Survive {SURVIVE_TARGET} exchanges with BARON to earn your
-              Certificate of Unbotherability. Your final Composure Index goes
-              on the certificate. Your expulsion from nFactorial is, as always,
-              already in motion.
+            <h1 className="text-3xl font-black">The Tribunal</h1>
+            <p className="text-zinc-600">
+              BARON decides who keeps their seat at nFactorial. Pitch your
+              product. Defend it for {ROUNDS} rounds. Reach Worthiness{" "}
+              {WORTHY_THRESHOLD} or the intern gets your desk.
+            </p>
+            <p className="text-xs text-zinc-500">
+              12,847 expelled. 3 deemed worthy. He regrets all three.
             </p>
             <div className="flex flex-col gap-2">
               {DIFFICULTIES.map((d) => (
@@ -163,8 +171,8 @@ export default function EndurePage() {
                   onClick={() => setDifficulty(d.id)}
                   className={`px-4 py-2 rounded-lg border text-sm transition ${
                     difficulty === d.id
-                      ? "border-violet-500 bg-violet-500/15 text-violet-200"
-                      : "border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                      ? "border-red-500 bg-red-500/10 text-red-700"
+                      : "border-zinc-300 text-zinc-600 hover:border-zinc-400"
                   }`}
                 >
                   {d.label}
@@ -173,9 +181,9 @@ export default function EndurePage() {
             </div>
             <button
               onClick={begin}
-              className="w-full bg-violet-600 hover:bg-violet-500 font-bold py-3 rounded-lg transition"
+              className="w-full bg-red-600 text-white hover:bg-red-500 font-bold py-3 rounded-lg transition"
             >
-              Begin Session
+              Enter the Tribunal
             </button>
           </div>
         ) : (
@@ -185,13 +193,13 @@ export default function EndurePage() {
                 key={i}
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap ${
                   m.role === "assistant"
-                    ? "self-start bg-zinc-900 border border-zinc-800"
-                    : "self-end bg-violet-600/90"
+                    ? "self-start bg-zinc-50 border border-zinc-200"
+                    : "self-end bg-red-600 text-white"
                 }`}
               >
                 {m.role === "assistant" && (
-                  <div className="text-[10px] uppercase tracking-widest text-red-400 mb-1 font-bold">
-                    BARON · Hostility Unit
+                  <div className="text-[10px] uppercase tracking-widest text-red-600 mb-1 font-bold">
+                    BARON · Gatekeeper
                   </div>
                 )}
                 {m.content ||
@@ -204,21 +212,21 @@ export default function EndurePage() {
       </main>
 
       {/* Composer */}
-      {started && (
-        <footer className="border-t border-zinc-800 bg-zinc-950 sticky bottom-0">
+      {started && !outcome && (
+        <footer className="border-t border-zinc-200 bg-white sticky bottom-0">
           <div className="max-w-3xl mx-auto px-4 py-3 flex gap-2">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder="Reply calmly. He can smell fear."
-              className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 outline-none focus:border-violet-500"
+              placeholder="Defend your seat."
+              className="flex-1 bg-zinc-50 border border-zinc-300 rounded-lg px-4 py-2.5 outline-none focus:border-red-500"
               disabled={streaming}
             />
             <button
               onClick={send}
               disabled={streaming || !input.trim()}
-              className="bg-violet-600 hover:bg-violet-500 disabled:opacity-40 font-bold px-5 rounded-lg transition"
+              className="bg-red-600 text-white hover:bg-red-500 disabled:opacity-40 font-bold px-5 rounded-lg transition"
             >
               Send
             </button>
@@ -226,32 +234,45 @@ export default function EndurePage() {
         </footer>
       )}
 
-      {/* Certificate */}
-      {certified && (
-        <div className="fixed inset-0 z-30 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl max-w-md w-full p-8 text-center space-y-4 shadow-2xl">
-            <div className="text-[11px] uppercase tracking-[0.3em] text-amber-300">
-              ToxiGym hereby certifies
+      {/* Outcome */}
+      {outcome && (
+        <div className="fixed inset-0 z-30 bg-black/85 flex items-center justify-center p-4">
+          {outcome === "worthy" ? (
+            <div className="bg-zinc-50 border border-emerald-500 rounded-xl max-w-md w-full p-8 text-center space-y-4">
+              <div className="text-[11px] uppercase tracking-[0.3em] text-emerald-400">
+                Tribunal ruling
+              </div>
+              <h2 className="text-3xl font-black">Deemed Worthy</h2>
+              <p className="text-zinc-700 text-sm">
+                Final Worthiness: {worthiness}/100. You are the 4th in history.
+                BARON already regrets it.
+              </p>
+              <button
+                onClick={() => setOutcome(null)}
+                className="bg-emerald-400 text-zinc-950 font-bold px-6 py-2 rounded-lg"
+              >
+                Keep your badge
+              </button>
             </div>
-            <h2 className="text-3xl font-black">
-              Certified Unbotherable
-            </h2>
-            <p className="text-zinc-300 text-sm">
-              Survived {SURVIVE_TARGET} rounds of BARON. Final Composure Index:{" "}
-              {composure}
-              {composure < 40 ? " (we watched you crack)" : ""}. Expulsion from
-              nFactorial: postponed.
-            </p>
-            <p className="text-[11px] text-zinc-500">
-              This certificate has no legal, professional, or emotional value.
-            </p>
-            <button
-              onClick={() => setCertified(false)}
-              className="bg-amber-400 text-zinc-950 font-bold px-6 py-2 rounded-lg"
-            >
-              Return to abuse
-            </button>
-          </div>
+          ) : (
+            <div className="bg-zinc-50 border border-red-600 rounded-xl max-w-md w-full p-8 text-center space-y-4">
+              <div className="text-[11px] uppercase tracking-[0.3em] text-red-600">
+                Notice of expulsion
+              </div>
+              <h2 className="text-3xl font-black">Expelled</h2>
+              <p className="text-zinc-700 text-sm">
+                Final Worthiness: {worthiness}/100 (required:{" "}
+                {WORTHY_THRESHOLD}). Your badge has been deactivated. The
+                intern says thanks for the desk.
+              </p>
+              <button
+                onClick={begin}
+                className="bg-red-600 text-white font-bold px-6 py-2 rounded-lg"
+              >
+                Appeal (start over)
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

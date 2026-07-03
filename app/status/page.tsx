@@ -10,7 +10,7 @@ export const metadata = { title: "Status · ToxiGym" };
 
 export default function StatusPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 px-6 py-16">
+    <div className="min-h-screen bg-white text-zinc-900 px-6 py-16">
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-black">System Status</h1>
@@ -22,11 +22,11 @@ export default function StatusPage() {
             BARON has not slept since deployment. He never will.
           </p>
         </div>
-        <div className="divide-y divide-zinc-800 border border-zinc-800 rounded-xl overflow-hidden">
+        <div className="divide-y divide-zinc-800 border border-zinc-200 rounded-xl overflow-hidden">
           {SYSTEMS.map((s) => (
             <div
               key={s.name}
-              className="flex items-center justify-between px-5 py-4 bg-zinc-900"
+              className="flex items-center justify-between px-5 py-4 bg-zinc-50"
             >
               <div>
                 <div className="font-semibold text-sm">{s.name}</div>
@@ -44,7 +44,7 @@ export default function StatusPage() {
             </div>
           ))}
         </div>
-        <p className="text-center text-[11px] text-zinc-600">
+        <p className="text-center text-[11px] text-zinc-500">
           Incidents this quarter: 0. Feelings hurt this quarter: 4,712,338.
         </p>
       </div>
