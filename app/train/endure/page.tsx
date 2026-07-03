@@ -128,9 +128,9 @@ export default function EndurePage() {
             ToxiGym™
           </Link>
           <div className="flex-1">
-            <div className="flex justify-between text-[11px] uppercase tracking-widest text-zinc-400 mb-1">
-              <span>Composure Index™</span>
-              <span>
+            <div className="flex justify-between gap-2 text-[10px] uppercase tracking-widest text-zinc-400 mb-1">
+              <span className="whitespace-nowrap">Composure™</span>
+              <span className="truncate text-right">
                 {composure}/100 · {verdict}
               </span>
             </div>
