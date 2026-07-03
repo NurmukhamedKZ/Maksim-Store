@@ -4,12 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 type Msg = { role: "user" | "assistant"; content: string };
-
-const DIFFICULTIES = [
-  { id: "linkedin", label: "LinkedIn Passive-Aggressive" },
-  { id: "family", label: "Family Group Chat" },
-  { id: "csgo", label: "Ranked Lobby (censored)" },
-];
+type Level = { label: string; instruction: string };
 
 const ROUNDS = 10;
 const WORTHY_THRESHOLD = 80;
@@ -18,7 +13,8 @@ export default function TribunalPage() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
-  const [difficulty, setDifficulty] = useState("linkedin");
+  const [levels, setLevels] = useState<Level[]>([]);
+  const [selected, setSelected] = useState(0);
   const [worthiness, setWorthiness] = useState(0);
   const [verdict, setVerdict] = useState("UNPROVEN");
   const [round, setRound] = useState(0);
@@ -30,6 +26,17 @@ export default function TribunalPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streaming]);
 
+  useEffect(() => {
+    fetch("/api/difficulties")
+      .then((r) => r.json())
+      .then(({ levels }) => setLevels(levels))
+      .catch(() =>
+        setLevels([
+          { label: "Трибунал", instruction: "INTENSITY: standard tribunal." },
+        ]),
+      );
+  }, []);
+
   async function streamBully(history: Msg[]) {
     setStreaming(true);
     setMessages([...history, { role: "assistant", content: "" }]);
@@ -37,7 +44,10 @@ export default function TribunalPage() {
       const res = await fetch("/api/bully", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history, difficulty }),
+        body: JSON.stringify({
+          messages: history,
+          intensity: levels[selected]?.instruction,
+        }),
       });
       if (!res.ok || !res.body) throw new Error(await res.text());
       const reader = res.body.getReader();
@@ -165,19 +175,25 @@ export default function TribunalPage() {
               12,847 expelled. 3 deemed worthy. He regrets all three.
             </p>
             <div className="flex flex-col gap-2">
-              {DIFFICULTIES.map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => setDifficulty(d.id)}
-                  className={`px-4 py-2 rounded-lg border text-sm transition ${
-                    difficulty === d.id
-                      ? "border-red-500 bg-red-500/10 text-red-700"
-                      : "border-zinc-300 text-zinc-600 hover:border-zinc-400"
-                  }`}
-                >
-                  {d.label}
-                </button>
-              ))}
+              {levels.length === 0 ? (
+                <div className="text-sm text-zinc-500 py-4">
+                  BARON придумывает, как тебя унизить сегодня…
+                </div>
+              ) : (
+                levels.map((d, i) => (
+                  <button
+                    key={d.label}
+                    onClick={() => setSelected(i)}
+                    className={`px-4 py-2 rounded-lg border text-sm transition ${
+                      selected === i
+                        ? "border-red-500 bg-red-500/10 text-red-700"
+                        : "border-zinc-300 text-zinc-600 hover:border-zinc-400"
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                ))
+              )}
             </div>
             <button
               onClick={begin}
