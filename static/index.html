@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Obidka™ — FridgeNet Insult Court</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --panel: #14171f;
+    --panel-2: #1b1f2b;
+    --text: #eef0f5;
+    --muted: #8b93a7;
+    --accent: #ff4d5e;
+    --accent-2: #ffd23f;
+    --border: #2a2f3d;
+    --good: #35d07f;
+    --bad: #ff4d5e;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: radial-gradient(1200px 600px at 50% -10%, #1b1230 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  header { text-align: center; margin-bottom: 28px; }
+  .badge {
+    display: inline-block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent-2); background: rgba(255,210,63,.1); border: 1px solid rgba(255,210,63,.35);
+    padding: 4px 10px; border-radius: 999px; margin-bottom: 14px;
+  }
+  h1 { font-size: 34px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  h1 span { color: var(--accent); }
+  .tagline { color: var(--muted); font-size: 15px; margin: 0; }
+
+  .card {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  textarea {
+    width: 100%; min-height: 110px; resize: vertical;
+    background: #0e1017; color: var(--text);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; font-size: 16px; line-height: 1.4;
+    font-family: inherit;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+
+  .row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 10px; flex-wrap: wrap; }
+  .counter { color: var(--muted); font-size: 13px; }
+
+  button.primary {
+    background: linear-gradient(180deg, #ff6270, var(--accent));
+    color: white; border: none; border-radius: 12px;
+    padding: 13px 22px; font-size: 16px; font-weight: 700;
+    cursor: pointer; box-shadow: 0 8px 20px rgba(255,77,94,.35);
+    transition: transform .1s ease;
+  }
+  button.primary:active { transform: scale(0.97); }
+  button.primary:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+
+  .hint { color: var(--muted); font-size: 12px; margin-top: 8px; }
+
+  #result { display: none; }
+  #result.show { display: block; }
+
+  .score-wrap { text-align: center; padding: 6px 0 4px; }
+  .score-num { font-size: 64px; font-weight: 800; line-height: 1; }
+  .score-label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+
+  .meter { height: 14px; border-radius: 999px; background: #0e1017; border: 1px solid var(--border); overflow: hidden; margin: 14px 0 4px; }
+  .meter-fill { height: 100%; border-radius: 999px; width: 0%; transition: width .6s ease; }
+
+  .verdict {
+    font-size: 18px; font-weight: 700; text-align: center; margin: 14px 0 0;
+    color: var(--accent-2);
+  }
+
+  .section-label {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
+    margin: 18px 0 6px;
+  }
+  .feedback, .upgraded {
+    background: #0e1017; border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; font-size: 15px; line-height: 1.5; white-space: pre-wrap;
+  }
+  .upgraded { border-color: rgba(255,77,94,.4); }
+
+  .copy-btn {
+    margin-top: 8px; background: transparent; color: var(--accent-2);
+    border: 1px solid rgba(255,210,63,.4); border-radius: 8px;
+    padding: 6px 12px; font-size: 13px; cursor: pointer;
+  }
+  .copy-btn:hover { background: rgba(255,210,63,.08); }
+
+  .error {
+    display: none; color: var(--bad); background: rgba(255,77,94,.08);
+    border: 1px solid rgba(255,77,94,.35); border-radius: 12px; padding: 12px 14px; font-size: 14px;
+    margin-top: 14px;
+  }
+  .error.show { display: block; }
+
+  .metrics {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px;
+  }
+  .metric { background: #0e1017; border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+  .metric b { display: block; font-size: 20px; color: var(--accent-2); }
+  .metric span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; line-height: 1.8; }
+  footer a { color: var(--muted); }
+
+  .spinner {
+    display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4);
+    border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -3px; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="badge">Series A · Insult-as-a-Service</div>
+    <h1>Obidka<span>™</span></h1>
+    <p class="tagline">Мы оцифровали искусство оскорблений. С научной точностью до 0.1%.</p>
+  </header>
+
+  <div class="card">
+    <label for="text" class="section-label">Ваше оскорбление (черновик)</label>
+    <textarea id="text" maxlength="500" placeholder="Например: твоя бабушка готовит борщ хуже, чем..."></textarea>
+    <div class="row">
+      <span class="counter"><span id="count">0</span>/500</span>
+      <button class="primary" id="submit">Оценить обидность</button>
+    </div>
+    <p class="hint">Мат и чёрный юмор — часть жанра. Разжигание ненависти и реальные угрозы — нет.</p>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="card" id="result">
+    <div class="score-wrap">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-label">Индекс обидности FridgeNet™</div>
+      <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+    </div>
+    <div class="verdict" id="verdict"></div>
+
+    <div class="section-label">Фидбек от жюри чёрного юмора</div>
+    <div class="feedback" id="feedback"></div>
+
+    <div class="section-label">Прокачанная версия (Enterprise Edition)</div>
+    <div class="upgraded" id="upgraded"></div>
+    <button class="copy-btn" id="copyBtn">Скопировать прокачанную версию</button>
+
+    <div class="metrics">
+      <div class="metric"><b id="mAudit">1</b><span>Оскорблений в этой сессии</span></div>
+      <div class="metric"><b>2.3M+</b><span>Проанализировано с запуска</span></div>
+      <div class="metric"><b>99.99%</b><span>Uptime жюри</span></div>
+    </div>
+  </div>
+
+  <footer>
+    FridgeNet Insult Court Inc. · «мы не храним ваш стыд» — Privacy Policy<br/>
+    Вакансия: Senior Sarcasm Vision Engineer · Series A: неоплаченный чёрный юмор
+  </footer>
+</div>
+
+<script>
+  const textEl = document.getElementById('text');
+  const countEl = document.getElementById('count');
+  const submitBtn = document.getElementById('submit');
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+  const scoreNumEl = document.getElementById('scoreNum');
+  const meterFillEl = document.getElementById('meterFill');
+  const verdictEl = document.getElementById('verdict');
+  const feedbackEl = document.getElementById('feedback');
+  const upgradedEl = document.getElementById('upgraded');
+  const copyBtn = document.getElementById('copyBtn');
+  const mAuditEl = document.getElementById('mAudit');
+
+  let sessionCount = 0;
+
+  textEl.addEventListener('input', () => {
+    countEl.textContent = textEl.value.length;
+  });
+
+  function scoreColor(score) {
+    if (score < 30) return '#35d07f';
+    if (score < 60) return '#ffd23f';
+    if (score < 85) return '#ff9d4d';
+    return '#ff4d5e';
+  }
+
+  function setLoading(loading) {
+    submitBtn.disabled = loading;
+    submitBtn.innerHTML = loading
+      ? '<span class="spinner"></span>Жюри совещается...'
+      : 'Оценить обидность';
+  }
+
+  function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.classList.add('show');
+  }
+
+  function hideError() {
+    errorEl.classList.remove('show');
+    errorEl.textContent = '';
+  }
+
+  async function submitInsult() {
+    const text = textEl.value.trim();
+    hideError();
+    if (!text) {
+      showError('Пустое оскорбление жюри не рассматривает. Напишите хоть что-то обидное.');
+      return;
+    }
+    setLoading(true);
+    resultEl.classList.remove('show');
+    try {
+      const res = await fetch('/api/roast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      if (!res.ok) {
+        let detail = 'Неизвестная ошибка сервера.';
+        try {
+          const errBody = await res.json();
+          if (typeof errBody.detail === 'string') {
+            detail = errBody.detail;
+          } else if (Array.isArray(errBody.detail)) {
+            detail = errBody.detail.map(d => d.msg || JSON.stringify(d)).join('; ');
+          }
+        } catch (_) {}
+        showError(detail);
+        return;
+      }
+      const data = await res.json();
+      renderResult(data);
+    } catch (err) {
+      showError('Не удалось связаться с жюри. Проверьте соединение и попробуйте снова.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function renderResult(data) {
+    const score = Math.max(0, Math.min(100, Number(data.score) || 0));
+    scoreNumEl.textContent = score;
+    scoreNumEl.style.color = scoreColor(score);
+    meterFillEl.style.width = score + '%';
+    meterFillEl.style.background = scoreColor(score);
+    verdictEl.textContent = data.verdict || '';
+    feedbackEl.textContent = data.feedback || '';
+    upgradedEl.textContent = data.upgraded_version || '';
+    sessionCount += 1;
+    mAuditEl.textContent = sessionCount;
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(upgradedEl.textContent);
+      copyBtn.textContent = 'Скопировано ✔';
+      setTimeout(() => { copyBtn.textContent = 'Скопировать прокачанную версию'; }, 1500);
+    } catch (_) {
+      showError('Не удалось скопировать — сделайте это руками, мы не всесильны.');
+    }
+  });
+
+  submitBtn.addEventListener('click', submitInsult);
+  textEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitInsult();
+  });
+</script>
+</body>
+</html>

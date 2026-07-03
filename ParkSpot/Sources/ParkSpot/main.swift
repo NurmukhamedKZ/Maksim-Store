@@ -2,6 +2,7 @@
 // Menu bar utility that draws a "P" parking pad in the corner of the screen.
 // Park your cursor in it, pay attention to the meter, or get fined.
 import AppKit
+import CoreGraphics
 import Foundation
 
 // MARK: - Persisted stats
@@ -131,6 +132,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     var state: ParkState = .away
     var zone: NSRect = .zero
+    var screenHeight: CGFloat = 0
+
+    // Idle -> auto-drive-to-park
+    let idleThreshold: TimeInterval = 10
+    var lastMouseLocation: NSPoint = .zero
+    var lastMoveTime: Date = Date()
+    var isAutoDriving: Bool = false
+    var autoDriveStart: NSPoint = .zero
+    var autoDriveStartTime: Date = Date()
+    var autoDriveDuration: TimeInterval = 0.6
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory) // menu-bar only, no Dock icon
@@ -151,6 +162,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let size = CGSize(width: 120, height: 120)
         let origin = CGPoint(x: screenFrame.maxX - size.width - 24, y: screenFrame.minY + 24)
         zone = NSRect(origin: origin, size: size)
+        screenHeight = screenFrame.height
+        lastMouseLocation = NSEvent.mouseLocation
+        lastMoveTime = Date()
 
         window = NSWindow(contentRect: zone, styleMask: [.borderless], backing: .buffered, defer: false)
         window.isOpaque = false
@@ -204,10 +218,52 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         rebuildMenu()
     }
 
+    func warpCursor(to cocoaPoint: NSPoint) {
+        let cgPoint = CGPoint(x: cocoaPoint.x, y: screenHeight - cocoaPoint.y)
+        CGWarpMouseCursorPosition(cgPoint)
+        if let event = CGEvent(mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: cgPoint, mouseButton: .left) {
+            event.post(tap: .cghidEventTap)
+        }
+    }
+
     func tick() {
-        let point = NSEvent.mouseLocation
-        let inside = zone.contains(point)
         let now = Date()
+        var point = NSEvent.mouseLocation
+
+        if !isAutoDriving {
+            if point != lastMouseLocation {
+                lastMouseLocation = point
+                lastMoveTime = now
+            } else if case .away = state, now.timeIntervalSince(lastMoveTime) >= idleThreshold {
+                isAutoDriving = true
+                autoDriveStart = point
+                autoDriveStartTime = now
+                let target = NSPoint(x: zone.midX, y: zone.midY)
+                let distance = hypot(target.x - point.x, target.y - point.y)
+                autoDriveDuration = min(max(Double(distance) / 1400.0, 0.35), 1.2)
+                logLine("AUTO-DRIVE start from=\(point) to=\(target)")
+            }
+        }
+
+        if isAutoDriving {
+            let target = NSPoint(x: zone.midX, y: zone.midY)
+            let t = min(now.timeIntervalSince(autoDriveStartTime) / autoDriveDuration, 1.0)
+            let eased = 1 - pow(1 - t, 2) // ease-out: fast start, gentle stop
+            let newPoint = NSPoint(
+                x: autoDriveStart.x + (target.x - autoDriveStart.x) * CGFloat(eased),
+                y: autoDriveStart.y + (target.y - autoDriveStart.y) * CGFloat(eased)
+            )
+            warpCursor(to: newPoint)
+            lastMouseLocation = newPoint
+            lastMoveTime = now
+            point = newPoint
+            if t >= 1.0 {
+                isAutoDriving = false
+                logLine("AUTO-DRIVE complete at=\(newPoint)")
+            }
+        }
+
+        let inside = zone.contains(point)
 
         switch (state, inside) {
         case (.away, true):
