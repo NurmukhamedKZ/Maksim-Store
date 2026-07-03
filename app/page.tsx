@@ -238,12 +238,16 @@ export default function Landing() {
       <footer className="border-t border-zinc-800">
         <div className="max-w-5xl mx-auto px-6 py-8 text-xs text-zinc-600 flex flex-col md:flex-row justify-between gap-3">
           <span>
-            © 2026 ToxiGym Inc. · A Worst Startup Ever production · BARON
-            uptime: 99.99%
+            © 2026 ToxiGym Inc. · A Worst Startup Ever production ·{" "}
+            <Link href="/status" className="underline hover:text-zinc-400">
+              Status: 99.99%
+            </Link>
           </span>
           <span>
-            Privacy: we do not store your shame · Careers: Senior Hostility
-            Engineer (remote)
+            Privacy: we do not store your shame ·{" "}
+            <Link href="/careers" className="underline hover:text-zinc-400">
+              Careers: Senior Hostility Engineer
+            </Link>
           </span>
         </div>
       </footer>
